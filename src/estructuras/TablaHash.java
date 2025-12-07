@@ -6,8 +6,6 @@ import java.util.List;
 /**
  * Implementación de Tabla Hash con manejo de colisiones mediante encadenamiento
  * Se usa para almacenar contenidos con acceso rápido por ID
- * @param <K> Tipo de la clave
- * @param <V> Tipo del valor
  */
 public class TablaHash<K, V> {
 
