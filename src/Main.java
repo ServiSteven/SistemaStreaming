@@ -1,192 +1,455 @@
+import sistema.SistemaStreaming;
 import modelo.Contenido;
 import modelo.Usuario;
-import estructuras.TablaHash;
-import estructuras.Heap;
-import estructuras.Diccionario;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.Scanner;
 
 /**
- * Clase principal para probar las estructuras y modelos
+ * Clase principal con menú interactivo
  */
 public class Main {
+
+    private static SistemaStreaming sistema = new SistemaStreaming();
+    private static Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
-        System.out.println("=== SISTEMA DE STREAMING - PRUEBAS ===\n");
+        cargarDatosPrueba(); // Cargar datos iniciales para probar
 
-        // ===== PRUEBA 1: Tabla Hash con Contenidos =====
-        System.out.println("--- PRUEBA 1: Tabla Hash de Contenidos ---");
-        TablaHash<String, Contenido> catalogoContenidos = new TablaHash<>();
+        boolean salir = false;
 
-        // Crear contenidos
-        Contenido pelicula1 = new Contenido("C001", "Matrix", 1999, 136);
-        pelicula1.agregarGenero("Ciencia Ficción");
-        pelicula1.agregarGenero("Acción");
+        while (!salir) {
+            mostrarMenuPrincipal();
+            int opcion = leerEntero("Seleccione una opción: ");
 
-        Contenido pelicula2 = new Contenido("C002", "El Padrino", 1972, 175);
-        pelicula2.agregarGenero("Drama");
-        pelicula2.agregarGenero("Crimen");
-
-        Contenido pelicula3 = new Contenido("C003", "Toy Story", 1995, 81);
-        pelicula3.agregarGenero("Animación");
-        pelicula3.agregarGenero("Aventura");
-
-        Contenido pelicula4 = new Contenido("C004", "Inception", 2010, 148);
-        pelicula4.agregarGenero("Ciencia Ficción");
-        pelicula4.agregarGenero("Thriller");
-
-        Contenido pelicula5 = new Contenido("C005", "Forrest Gump", 1994, 142);
-        pelicula5.agregarGenero("Drama");
-        pelicula5.agregarGenero("Romance");
-
-        // Insertar en tabla hash
-        catalogoContenidos.insertar(pelicula1.getId(), pelicula1);
-        catalogoContenidos.insertar(pelicula2.getId(), pelicula2);
-        catalogoContenidos.insertar(pelicula3.getId(), pelicula3);
-        catalogoContenidos.insertar(pelicula4.getId(), pelicula4);
-        catalogoContenidos.insertar(pelicula5.getId(), pelicula5);
-
-        System.out.println("✓ Contenidos registrados: " + catalogoContenidos.tamanio());
-        System.out.println();
-
-        // ===== PRUEBA 2: Simulación de reproducciones y calificaciones =====
-        System.out.println("--- PRUEBA 2: Reproducciones y Calificaciones ---");
-
-        // Matrix - muy popular
-        pelicula1.registrarReproduccion();
-        pelicula1.registrarReproduccion();
-        pelicula1.registrarReproduccion();
-        pelicula1.registrarReproduccion();
-        pelicula1.registrarReproduccion();
-        pelicula1.registrarCalificacion(5);
-        pelicula1.registrarCalificacion(5);
-        pelicula1.registrarCalificacion(4);
-
-        // El Padrino - popular y bien calificada
-        pelicula2.registrarReproduccion();
-        pelicula2.registrarReproduccion();
-        pelicula2.registrarReproduccion();
-        pelicula2.registrarCalificacion(5);
-        pelicula2.registrarCalificacion(5);
-        pelicula2.registrarCalificacion(5);
-
-        // Toy Story - moderadamente popular
-        pelicula3.registrarReproduccion();
-        pelicula3.registrarReproduccion();
-        pelicula3.registrarCalificacion(4);
-        pelicula3.registrarCalificacion(5);
-
-        // Inception - poco vista pero bien calificada
-        pelicula4.registrarReproduccion();
-        pelicula4.registrarCalificacion(5);
-
-        // Forrest Gump - muy vista
-        pelicula5.registrarReproduccion();
-        pelicula5.registrarReproduccion();
-        pelicula5.registrarReproduccion();
-        pelicula5.registrarReproduccion();
-        pelicula5.registrarCalificacion(4);
-        pelicula5.registrarCalificacion(5);
-
-        System.out.println("✓ Reproducciones y calificaciones registradas");
-        System.out.println();
-
-        // ===== PRUEBA 3: Heap - Ranking por reproducciones =====
-        System.out.println("--- PRUEBA 3: Ranking por Reproducciones (Heap) ---");
-
-        // Comparador por número de reproducciones
-        Comparator<Contenido> comparadorReproducciones =
-                (c1, c2) -> Integer.compare(c1.getReproducciones(), c2.getReproducciones());
-
-        Heap<Contenido> heapReproducciones = new Heap<>(comparadorReproducciones);
-        heapReproducciones.insertar(pelicula1);
-        heapReproducciones.insertar(pelicula2);
-        heapReproducciones.insertar(pelicula3);
-        heapReproducciones.insertar(pelicula4);
-        heapReproducciones.insertar(pelicula5);
-
-        System.out.println("🏆 TOP 3 MÁS VISTAS:");
-        List<Contenido> top3Vistas = heapReproducciones.obtenerTopN(3);
-        for (int i = 0; i < top3Vistas.size(); i++) {
-            Contenido c = top3Vistas.get(i);
-            System.out.println((i+1) + ". " + c.getTitulo() + " - " + c.getReproducciones() + " reproducciones");
+            switch (opcion) {
+                case 1:
+                    menuGestionUsuarios();
+                    break;
+                case 2:
+                    menuGestionContenidos();
+                    break;
+                case 3:
+                    menuReproduccionesCalificaciones();
+                    break;
+                case 4:
+                    menuRecomendaciones();
+                    break;
+                case 5:
+                    menuRanking();
+                    break;
+                case 6:
+                    menuReportes();
+                    break;
+                case 0:
+                    salir = true;
+                    System.out.println("\n¡Gracias por usar el Sistema de Streaming!");
+                    break;
+                default:
+                    System.out.println("\n❌ Opción inválida");
+            }
         }
-        System.out.println();
 
-        // ===== PRUEBA 4: Heap - Ranking por calificación =====
-        System.out.println("--- PRUEBA 4: Ranking por Calificación (Heap) ---");
+        scanner.close();
+    }
 
-        // Comparador por calificación promedio
-        Comparator<Contenido> comparadorCalificacion =
-                (c1, c2) -> Double.compare(c1.getCalificacionPromedio(), c2.getCalificacionPromedio());
+    // ========== MENÚS ==========
 
-        Heap<Contenido> heapCalificaciones = new Heap<>(comparadorCalificacion);
-        heapCalificaciones.insertar(pelicula1);
-        heapCalificaciones.insertar(pelicula2);
-        heapCalificaciones.insertar(pelicula3);
-        heapCalificaciones.insertar(pelicula4);
-        heapCalificaciones.insertar(pelicula5);
+    private static void mostrarMenuPrincipal() {
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║ SISTEMA DE STREAMING - MENÚ PRINCIPAL  ║");
+        System.out.println("╚════════════════════════════════════════╝");
+        System.out.println("1. Gestión de Usuarios");
+        System.out.println("2. Gestión de Contenidos");
+        System.out.println("3. Reproducciones y Calificaciones");
+        System.out.println("4. Recomendaciones");
+        System.out.println("5. Ranking");
+        System.out.println("6. Reportes");
+        System.out.println("0. Salir");
+        System.out.println("═════════════════════════════════════════");
+    }
 
-        System.out.println("⭐ TOP 3 MEJOR CALIFICADAS:");
-        List<Contenido> top3Calificadas = heapCalificaciones.obtenerTopN(3);
-        for (int i = 0; i < top3Calificadas.size(); i++) {
-            Contenido c = top3Calificadas.get(i);
-            System.out.println((i+1) + ". " + c.getTitulo() + " - ⭐ " +
+    private static void menuGestionUsuarios() {
+        System.out.println("\n--- GESTIÓN DE USUARIOS ---");
+        System.out.println("1. Registrar usuario");
+        System.out.println("2. Consultar usuario");
+        System.out.println("3. Agregar gusto a usuario");
+        System.out.println("0. Volver");
+
+        int opcion = leerEntero("Opción: ");
+
+        switch (opcion) {
+            case 1:
+                registrarUsuario();
+                break;
+            case 2:
+                consultarUsuario();
+                break;
+            case 3:
+                agregarGustoUsuario();
+                break;
+        }
+    }
+
+    private static void menuGestionContenidos() {
+        System.out.println("\n--- GESTIÓN DE CONTENIDOS ---");
+        System.out.println("1. Registrar contenido");
+        System.out.println("2. Consultar contenido");
+        System.out.println("3. Agregar género a contenido");
+        System.out.println("0. Volver");
+
+        int opcion = leerEntero("Opción: ");
+
+        switch (opcion) {
+            case 1:
+                registrarContenido();
+                break;
+            case 2:
+                consultarContenido();
+                break;
+            case 3:
+                agregarGeneroContenido();
+                break;
+        }
+    }
+
+    private static void menuReproduccionesCalificaciones() {
+        System.out.println("\n--- REPRODUCCIONES Y CALIFICACIONES ---");
+        System.out.println("1. Registrar reproducción");
+        System.out.println("2. Registrar calificación");
+        System.out.println("0. Volver");
+
+        int opcion = leerEntero("Opción: ");
+
+        switch (opcion) {
+            case 1:
+                registrarReproduccion();
+                break;
+            case 2:
+                registrarCalificacion();
+                break;
+        }
+    }
+
+    private static void menuRecomendaciones() {
+        System.out.println("\n--- RECOMENDACIONES ---");
+        System.out.println("1. Recomendar contenidos a usuario");
+        System.out.println("2. Encontrar contenidos similares");
+        System.out.println("0. Volver");
+
+        int opcion = leerEntero("Opción: ");
+
+        switch (opcion) {
+            case 1:
+                recomendarContenidos();
+                break;
+            case 2:
+                encontrarSimilares();
+                break;
+        }
+    }
+
+    private static void menuRanking() {
+        System.out.println("\n--- RANKING ---");
+        System.out.println("1. Top N más vistos");
+        System.out.println("2. Top N mejor calificados");
+        System.out.println("3. Menos vistos");
+        System.out.println("0. Volver");
+
+        int opcion = leerEntero("Opción: ");
+
+        switch (opcion) {
+            case 1:
+                mostrarTopMasVistos();
+                break;
+            case 2:
+                mostrarTopMejorCalificados();
+                break;
+            case 3:
+                mostrarMenosVistos();
+                break;
+        }
+    }
+
+    private static void menuReportes() {
+        System.out.println("\n--- REPORTES ---");
+        System.out.println("1. Historial de usuario");
+        System.out.println("2. Usuarios que vieron un contenido");
+        System.out.println("3. Estadísticas del sistema");
+        System.out.println("4. Contenidos por género");
+        System.out.println("0. Volver");
+
+        int opcion = leerEntero("Opción: ");
+
+        switch (opcion) {
+            case 1:
+                mostrarHistorialUsuario();
+                break;
+            case 2:
+                mostrarUsuariosQueVieron();
+                break;
+            case 3:
+                mostrarEstadisticas();
+                break;
+            case 4:
+                mostrarContenidosPorGenero();
+                break;
+        }
+    }
+
+    // ========== FUNCIONES DE GESTIÓN ==========
+
+    private static void registrarUsuario() {
+        System.out.println("\n--- Registrar Usuario ---");
+        String id = leerTexto("ID del usuario: ");
+        String nombre = leerTexto("Nombre: ");
+
+        if (sistema.registrarUsuario(id, nombre)) {
+            System.out.println("✓ Usuario registrado exitosamente");
+        } else {
+            System.out.println("❌ Error: El usuario ya existe");
+        }
+    }
+
+    private static void consultarUsuario() {
+        String id = leerTexto("ID del usuario: ");
+        Usuario usuario = sistema.obtenerUsuario(id);
+
+        if (usuario != null) {
+            System.out.println("\n" + usuario);
+        } else {
+            System.out.println("❌ Usuario no encontrado");
+        }
+    }
+
+    private static void agregarGustoUsuario() {
+        String id = leerTexto("ID del usuario: ");
+        String genero = leerTexto("Género favorito: ");
+
+        if (sistema.agregarGustoUsuario(id, genero)) {
+            System.out.println("✓ Gusto agregado exitosamente");
+        } else {
+            System.out.println("❌ Usuario no encontrado");
+        }
+    }
+
+    private static void registrarContenido() {
+        System.out.println("\n--- Registrar Contenido ---");
+        String id = leerTexto("ID del contenido: ");
+        String titulo = leerTexto("Título: ");
+        int anio = leerEntero("Año: ");
+        int duracion = leerEntero("Duración (minutos): ");
+
+        if (sistema.registrarContenido(id, titulo, anio, duracion)) {
+            System.out.println("✓ Contenido registrado exitosamente");
+        } else {
+            System.out.println("❌ Error: El contenido ya existe");
+        }
+    }
+
+    private static void consultarContenido() {
+        String id = leerTexto("ID del contenido: ");
+        Contenido contenido = sistema.obtenerContenido(id);
+
+        if (contenido != null) {
+            System.out.println("\n" + contenido);
+        } else {
+            System.out.println("❌ Contenido no encontrado");
+        }
+    }
+
+    private static void agregarGeneroContenido() {
+        String id = leerTexto("ID del contenido: ");
+        String genero = leerTexto("Género: ");
+
+        if (sistema.agregarGeneroContenido(id, genero)) {
+            System.out.println("✓ Género agregado exitosamente");
+        } else {
+            System.out.println("❌ Contenido no encontrado");
+        }
+    }
+
+    private static void registrarReproduccion() {
+        String idUsuario = leerTexto("ID del usuario: ");
+        String idContenido = leerTexto("ID del contenido: ");
+
+        if (sistema.registrarReproduccion(idUsuario, idContenido)) {
+            System.out.println("✓ Reproducción registrada");
+        } else {
+            System.out.println("❌ Error: Usuario o contenido no encontrado");
+        }
+    }
+
+    private static void registrarCalificacion() {
+        String idUsuario = leerTexto("ID del usuario: ");
+        String idContenido = leerTexto("ID del contenido: ");
+        int calificacion = leerEntero("Calificación (1-5 estrellas): ");
+
+        if (sistema.registrarCalificacion(idUsuario, idContenido, calificacion)) {
+            System.out.println("✓ Calificación registrada");
+        } else {
+            System.out.println("❌ Error: Datos inválidos");
+        }
+    }
+
+    private static void recomendarContenidos() {
+        String idUsuario = leerTexto("ID del usuario: ");
+        int cantidad = leerEntero("Cantidad de recomendaciones: ");
+
+        List<Contenido> recomendaciones = sistema.recomendarContenidos(idUsuario, cantidad);
+
+        System.out.println("\n🎬 RECOMENDACIONES:");
+        if (recomendaciones.isEmpty()) {
+            System.out.println("No hay recomendaciones disponibles");
+        } else {
+            for (Contenido c : recomendaciones) {
+                System.out.println("  • " + c.getTitulo() + " " + c.getGeneros());
+            }
+        }
+    }
+
+    private static void encontrarSimilares() {
+        String idContenido = leerTexto("ID del contenido: ");
+        int cantidad = leerEntero("Cantidad de similares: ");
+
+        List<Contenido> similares = sistema.encontrarSimilares(idContenido, cantidad);
+
+        System.out.println("\n🎭 CONTENIDOS SIMILARES:");
+        if (similares.isEmpty()) {
+            System.out.println("No se encontraron contenidos similares");
+        } else {
+            for (Contenido c : similares) {
+                System.out.println("  • " + c.getTitulo() + " " + c.getGeneros());
+            }
+        }
+    }
+
+    private static void mostrarTopMasVistos() {
+        int n = leerEntero("Top N más vistos: ");
+        List<Contenido> top = sistema.obtenerTopMasVistos(n);
+
+        System.out.println("\n🏆 TOP " + n + " MÁS VISTOS:");
+        for (int i = 0; i < top.size(); i++) {
+            Contenido c = top.get(i);
+            System.out.println((i + 1) + ". " + c.getTitulo() + " - " + c.getReproducciones() + " reproducciones");
+        }
+    }
+
+    private static void mostrarTopMejorCalificados() {
+        int n = leerEntero("Top N mejor calificados: ");
+        List<Contenido> top = sistema.obtenerTopMejorCalificados(n);
+
+        System.out.println("\n⭐ TOP " + n + " MEJOR CALIFICADOS:");
+        for (int i = 0; i < top.size(); i++) {
+            Contenido c = top.get(i);
+            System.out.println((i + 1) + ". " + c.getTitulo() + " - ⭐ " +
                     String.format("%.1f", c.getCalificacionPromedio()) + "/5.0");
         }
-        System.out.println();
+    }
 
-        // ===== PRUEBA 5: Diccionario - Historial de usuarios =====
-        System.out.println("--- PRUEBA 5: Historial de Usuarios (Diccionario) ---");
+    private static void mostrarMenosVistos() {
+        int n = leerEntero("Cantidad: ");
+        List<Contenido> menos = sistema.obtenerMenosVistos(n);
 
-        // Crear usuarios
-        Usuario usuario1 = new Usuario("U001", "Juan Pérez");
-        usuario1.agregarGusto("Acción");
-        usuario1.agregarGusto("Ciencia Ficción");
+        System.out.println("\n📉 " + n + " MENOS VISTOS:");
+        for (int i = 0; i < menos.size(); i++) {
+            Contenido c = menos.get(i);
+            System.out.println((i + 1) + ". " + c.getTitulo() + " - " + c.getReproducciones() + " reproducciones");
+        }
+    }
 
-        Usuario usuario2 = new Usuario("U002", "María López");
-        usuario2.agregarGusto("Drama");
-        usuario2.agregarGusto("Romance");
+    private static void mostrarHistorialUsuario() {
+        String idUsuario = leerTexto("ID del usuario: ");
+        List<Contenido> historial = sistema.obtenerHistorialUsuario(idUsuario);
 
-        // Diccionario para almacenar historial: idUsuario -> lista de contenidos vistos
-        Diccionario<String, List<String>> historialUsuarios = new Diccionario<>();
-
-        // Historial de Juan
-        List<String> historialJuan = new ArrayList<>();
-        historialJuan.add("C001"); // Matrix
-        historialJuan.add("C004"); // Inception
-        historialJuan.add("C003"); // Toy Story
-        historialUsuarios.insertar(usuario1.getId(), historialJuan);
-
-        // Historial de María
-        List<String> historialMaria = new ArrayList<>();
-        historialMaria.add("C002"); // El Padrino
-        historialMaria.add("C005"); // Forrest Gump
-        historialUsuarios.insertar(usuario2.getId(), historialMaria);
-
-        System.out.println("✓ Historial registrado para " + historialUsuarios.tamanio() + " usuarios");
-
-        // Consultar historial
-        System.out.println("\nHistorial de " + usuario1.getNombre() + ":");
-        List<String> historial = historialUsuarios.obtener(usuario1.getId());
-        for (String idContenido : historial) {
-            Contenido c = catalogoContenidos.buscar(idContenido);
-            if (c != null) {
-                System.out.println("  - " + c.getTitulo() + " (" + c.getGeneros() + ")");
+        System.out.println("\n📜 HISTORIAL:");
+        if (historial.isEmpty()) {
+            System.out.println("El usuario no ha visto contenido");
+        } else {
+            for (Contenido c : historial) {
+                System.out.println("  • " + c.getTitulo() + " (" + c.getAnio() + ")");
             }
         }
+    }
 
-        System.out.println("\nHistorial de " + usuario2.getNombre() + ":");
-        historial = historialUsuarios.obtener(usuario2.getId());
-        for (String idContenido : historial) {
-            Contenido c = catalogoContenidos.buscar(idContenido);
-            if (c != null) {
-                System.out.println("  - " + c.getTitulo() + " (" + c.getGeneros() + ")");
+    private static void mostrarUsuariosQueVieron() {
+        String idContenido = leerTexto("ID del contenido: ");
+        List<Usuario> usuarios = sistema.obtenerUsuariosQueVieron(idContenido);
+
+        System.out.println("\n👥 USUARIOS QUE VIERON ESTE CONTENIDO:");
+        if (usuarios.isEmpty()) {
+            System.out.println("Ningún usuario ha visto este contenido");
+        } else {
+            for (Usuario u : usuarios) {
+                System.out.println("  • " + u.getNombre() + " (" + u.getId() + ")");
             }
         }
-        System.out.println();
+    }
 
-        System.out.println("=== TODAS LAS ESTRUCTURAS FUNCIONANDO CORRECTAMENTE ===");
+    private static void mostrarEstadisticas() {
+        Map<String, Integer> stats = sistema.obtenerEstadisticas();
+
+        System.out.println("\n📊 ESTADÍSTICAS DEL SISTEMA:");
+        System.out.println("Total de usuarios: " + stats.get("totalUsuarios"));
+        System.out.println("Total de contenidos: " + stats.get("totalContenidos"));
+        System.out.println("Géneros disponibles: " + stats.get("generosDisponibles"));
+    }
+
+    private static void mostrarContenidosPorGenero() {
+        String genero = leerTexto("Género: ");
+        int cantidad = sistema.contarContenidosPorGenero(genero);
+
+        System.out.println("\n📚 Contenidos de '" + genero + "': " + cantidad);
+    }
+
+    // ========== DATOS DE PRUEBA ==========
+
+    private static void cargarDatosPrueba() {
+        // Usuarios
+        sistema.registrarUsuario("U001", "Juan Pérez");
+        sistema.agregarGustoUsuario("U001", "Acción");
+        sistema.agregarGustoUsuario("U001", "Ciencia Ficción");
+
+        sistema.registrarUsuario("U002", "María López");
+        sistema.agregarGustoUsuario("U002", "Drama");
+        sistema.agregarGustoUsuario("U002", "Romance");
+
+        // Contenidos
+        sistema.registrarContenido("C001", "Matrix", 1999, 136);
+        sistema.agregarGeneroContenido("C001", "Ciencia Ficción");
+        sistema.agregarGeneroContenido("C001", "Acción");
+
+        sistema.registrarContenido("C002", "El Padrino", 1972, 175);
+        sistema.agregarGeneroContenido("C002", "Drama");
+        sistema.agregarGeneroContenido("C002", "Crimen");
+
+        sistema.registrarContenido("C003", "Toy Story", 1995, 81);
+        sistema.agregarGeneroContenido("C003", "Animación");
+        sistema.agregarGeneroContenido("C003", "Aventura");
+
+        // Reproducciones
+        sistema.registrarReproduccion("U001", "C001");
+        sistema.registrarCalificacion("U001", "C001", 5);
+
+        System.out.println("✓ Datos de prueba cargados\n");
+    }
+
+    // ========== UTILIDADES ==========
+
+    private static String leerTexto(String mensaje) {
+        System.out.print(mensaje);
+        return scanner.nextLine();
+    }
+
+    private static int leerEntero(String mensaje) {
+        System.out.print(mensaje);
+        while (!scanner.hasNextInt()) {
+            scanner.next();
+            System.out.print("Ingrese un número válido: ");
+        }
+        int numero = scanner.nextInt();
+        scanner.nextLine(); // Limpiar buffer
+        return numero;
     }
 }
